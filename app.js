@@ -14,6 +14,9 @@ const CHANNEL = {tickets: "Тикеты", email: "Email", chat: "Чат", phone_
 const FLAGS = {PASS_WITHOUT_EMPLOYER_ORIGINAL: "PASS без первичного источника", REMOTE_NOT_CONFIRMED: "Удалёнка не подтверждена", NON_REMOTE_STATUS_CONFLICT: "Конфликт: офис / гибрид", STATUS_DISAGREEMENT_BETWEEN_FILES: "Источники расходятся в статусе", HISTORY_ONLY: "Только исторические данные", CHECK_DATE_INFERRED_FROM_COMMIT: "Дата взята из коммита", PASS_SCHEDULE_UNCONFIRMED: "График PASS не подтверждён"};
 const TYPES = {vacancy_lead: "Конкретная роль", company_watchlist: "Мониторинг компании"};
 const APPLICATION_FIELD = "my_application";
+// This selects the personal interface; GitHub authorization protects the data.
+const journalMode = location.hash === "#journal";
+document.documentElement.classList.toggle("journal-mode", journalMode);
 const state = {meta: null, columns: [], page: 1, pages: 1, total: 0, pageSize: 25, sort: "priority", direction: "desc", view: "all", controller: null, detailController: null, applications: new Map(), catalogueRows: new Map(), catalogueIds: null, filteredRows: [], applicationStore: null, pendingConnectionStore: null, connectionGeneration: 0, applicationStatus: "", followUp: "", onlyApplications: false, pendingBackup: null, importInProgress: false, pendingSaves: 0, objectUrls: new Set()};
 const storageKey = "support-atlas.preferences.v1";
 const journalConfigKey = "support-atlas.journal-connection.v1";
@@ -106,13 +109,13 @@ function params() {
   return result;
 }
 function syncUrl(query) {
-  history.replaceState(null, "", `${location.pathname}?${query}`);
+  history.replaceState(null, "", `${location.pathname}?${query}${journalMode ? "#journal" : ""}`);
 }
 function labels() { return {...Object.fromEntries(state.meta.columns.map((column) => [column.field, column.label])), [APPLICATION_FIELD]: "Мой отклик"}; }
 function tableFields() {
   const fields = [...state.columns];
   const vacancy = fields.indexOf("vacancy");
-  fields.splice(vacancy >= 0 ? vacancy + 1 : Math.min(1, fields.length), 0, APPLICATION_FIELD);
+  if (journalMode) fields.splice(vacancy >= 0 ? vacancy + 1 : Math.min(1, fields.length), 0, APPLICATION_FIELD);
   return fields;
 }
 function updateViews() {
@@ -170,7 +173,7 @@ function renderHead() {
     row.append(th);
   }
   $("#table-head").replaceChildren(row);
-  $("#visible-count").textContent = state.columns.length + 1;
+  $("#visible-count").textContent = tableFields().length;
 }
 function cell(row, field) {
   if (field === APPLICATION_FIELD) return applicationCell(row);
@@ -189,7 +192,7 @@ function cell(row, field) {
     button.addEventListener("click", () => openDetail(row.record_id));
     const subtext = row.review_required ? "△ Есть замечания к данным" : TYPES[row.record_type];
     const mobileAction = make("div", "mobile-application-action");
-    mobileAction.append(applicationControl(row));
+    if (journalMode) mobileAction.append(applicationControl(row));
     td.append(button, make("div", `role-meta${row.review_required ? " warning" : ""}`, subtext), mobileAction);
   } else if (field === "status") td.append(badge(value));
   else if (field === "fit") td.append(make("span", "fit-cell", value ?? "—"));
@@ -387,6 +390,7 @@ function insertApplicationEditor(container, section) {
   else container.prepend(section);
 }
 async function renderApplicationEditor(container, row, sourceRecord = null) {
+  if (!journalMode) return;
   const section = make("section", "application-editor");
   section.append(make("h3", "", "Мой отклик"));
   const store = state.applicationStore;

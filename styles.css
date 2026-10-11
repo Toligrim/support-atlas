@@ -1515,3 +1515,8 @@ dialog h2 {
     justify-content:flex-start;
   }
 }
+
+/* The public catalogue has no personal journal entry points. */
+html:not(.journal-mode) [data-journal] { display: none !important; }
+.connection-settings summary { cursor: pointer; color: var(--muted); padding: 12px 0; }
+.connection-settings[open] .application-fields { margin-top: 12px; }
