@@ -1,0 +1,266 @@
+{
+  "5ac233b3baff7536": {
+    "file": "5ac233b3baff7536.md",
+    "name": "docs/METHODOLOGY.md",
+    "date": "2026-10-10T12:28:41+03:00",
+    "blob_sha": "9548cc45d900e469c4c6cb67fc82b8fe155c6cbf"
+  },
+  "0c1c144ebfa5c97d": {
+    "file": "0c1c144ebfa5c97d.md",
+    "name": "research/2026-10-10-ru-cloud.md",
+    "date": "2026-10-10T12:28:49+03:00",
+    "blob_sha": "f0c3357f40cfbe57ef83262fbfebe5b0556c6079"
+  },
+  "11e03a0b0bebddcb": {
+    "file": "11e03a0b0bebddcb.csv",
+    "name": "data/ru-cloud-vendors.csv",
+    "date": "2026-10-10T12:29:17+03:00",
+    "blob_sha": "d1b4aebf37f4561d6ef0ce2fe4abe3f5f45ed480"
+  },
+  "37584983f140d63e": {
+    "file": "37584983f140d63e.csv",
+    "name": "data/ru-cloud-vendors.csv",
+    "date": "2026-10-10T12:37:28+03:00",
+    "blob_sha": "ff4191a939eb5653395ddceeb9ed8d2ecce91973"
+  },
+  "a0a9317ac5fd313f": {
+    "file": "a0a9317ac5fd313f.md",
+    "name": "research/2026-10-10-ru-cloud-pass-2.md",
+    "date": "2026-10-10T12:44:11+03:00",
+    "blob_sha": "222ccc1a77605c60282ee6ec4809a7525be6838b"
+  },
+  "d72a6f3bbbaeebff": {
+    "file": "d72a6f3bbbaeebff.csv",
+    "name": "data/ru-cloud-vendors.csv",
+    "date": "2026-10-10T12:44:11+03:00",
+    "blob_sha": "9f45912e343b78dc4745e4f4ba2b4ae86f160ea9"
+  },
+  "b27783487620ff06": {
+    "file": "b27783487620ff06.md",
+    "name": "docs/METHODOLOGY.md",
+    "date": "2026-10-10T12:44:11+03:00",
+    "blob_sha": "0cd5ed5be197f466018759af6eaa32114fd6c4aa"
+  },
+  "95a50ac6c071976e": {
+    "file": "95a50ac6c071976e.md",
+    "name": "research/2026-10-10-ru-cloud-pass-2b.md",
+    "date": "2026-10-10T12:44:11+03:00",
+    "blob_sha": "9556dd4c0bf0bcda0a3a3e5a4cb6dd8b5b0fa0e5"
+  },
+  "b5610ef66c6b4890": {
+    "file": "b5610ef66c6b4890.md",
+    "name": "docs/METHODOLOGY.md",
+    "date": "2026-10-10T13:26:26+03:00",
+    "blob_sha": "506dd5ec7b5412f336d39ba31d9c8b2b01e3cfc1"
+  },
+  "8c552d30ed56b87c": {
+    "file": "8c552d30ed56b87c.md",
+    "name": "research/2026-10-10-ru-cloud-a03.md",
+    "date": "2026-10-10T13:26:26+03:00",
+    "blob_sha": "769605d755b38765ebc87f8345543fe8e0783b1d"
+  },
+  "fb4841d019c9a07f": {
+    "file": "fb4841d019c9a07f.csv",
+    "name": "data/ru-cloud-vendors.csv",
+    "date": "2026-10-10T13:26:26+03:00",
+    "blob_sha": "a9367828b63c899c591656ab665d9037b3aad24b"
+  },
+  "c7635d1a3000d442": {
+    "file": "c7635d1a3000d442.md",
+    "name": "docs/METHODOLOGY.md",
+    "date": "2026-10-10T13:29:11+03:00",
+    "blob_sha": "173fdc625b56b79a4b79697bde8557ca620d750b"
+  },
+  "c444054d14d9e2ea": {
+    "file": "c444054d14d9e2ea.csv",
+    "name": "data/remote-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T13:35:36+03:00",
+    "blob_sha": "051362ac3ccd5b9fce3cd26bdcd4b267590c20a4"
+  },
+  "22df48079aae2f28": {
+    "file": "22df48079aae2f28.md",
+    "name": "research/2026-10-10-remote-support-bulk-01.md",
+    "date": "2026-10-10T13:37:01+03:00",
+    "blob_sha": "acec2fcc0fbedd0165ac5ee61ae8d899a1615f39"
+  },
+  "1e0e1e6bc4ecb502": {
+    "file": "1e0e1e6bc4ecb502.csv",
+    "name": "data/remote-support-batch-2026-10-10-2.csv",
+    "date": "2026-10-10T13:46:53+03:00",
+    "blob_sha": "853a4a637bd75672c96af1635c68e7d91c524567"
+  },
+  "1aee8cc69a91cf25": {
+    "file": "1aee8cc69a91cf25.md",
+    "name": "research/2026-10-10-remote-support-bulk-02.md",
+    "date": "2026-10-10T13:47:55+03:00",
+    "blob_sha": "b54000de8e76c97edb72ad2a1f48f8c489fcbece"
+  },
+  "355e8058e64ad721": {
+    "file": "355e8058e64ad721.csv",
+    "name": "data/ru-it-vendor-expansion-2026-10-10.csv",
+    "date": "2026-10-10T15:13:12+03:00",
+    "blob_sha": "3395dcb04c37e18a1717481cd0f136384125e19e"
+  },
+  "76d92ad37c08b302": {
+    "file": "76d92ad37c08b302.md",
+    "name": "research/2026-10-10-ru-it-vendor-expansion-01.md",
+    "date": "2026-10-10T15:13:43+03:00",
+    "blob_sha": "b10b20c8253117ee90e6f5948f351cd14a01ad9c"
+  },
+  "2b0a6a805703f620": {
+    "file": "2b0a6a805703f620.csv",
+    "name": "data/deep-check-shortlist-2026-10-10.csv",
+    "date": "2026-10-10T15:19:12+03:00",
+    "blob_sha": "a66502ee41b0dbc5bff18b480f5aaefbba7b4f09"
+  },
+  "c27a9326cb9ba688": {
+    "file": "c27a9326cb9ba688.md",
+    "name": "research/2026-10-10-deep-check-shortlist-01.md",
+    "date": "2026-10-10T15:19:36+03:00",
+    "blob_sha": "40ffa1a6d237bfc3dcd0882186bef1ed4d4d2eb0"
+  },
+  "b3364118e2e5d920": {
+    "file": "b3364118e2e5d920.csv",
+    "name": "data/ru-it-vendor-deep-batch-2026-10-10-02.csv",
+    "date": "2026-10-10T15:28:36+03:00",
+    "blob_sha": "5799824fdfdf2c1b24c82dc90af745c5e5d824dd"
+  },
+  "ff44cc06ca187d85": {
+    "file": "ff44cc06ca187d85.md",
+    "name": "research/2026-10-10-ru-it-vendor-deep-02.md",
+    "date": "2026-10-10T15:29:02+03:00",
+    "blob_sha": "377a6738e624c3f98aad627b384f4a09b9db9256"
+  },
+  "1a0a01ffde6f5d0e": {
+    "file": "1a0a01ffde6f5d0e.md",
+    "name": "research/2026-10-10-ru-it-vendor-deep-02.md",
+    "date": "2026-10-10T15:29:37+03:00",
+    "blob_sha": "522d9024309f0e5ffe6fa97a86f4a19d18b1b9db"
+  },
+  "31ba1cff549cc33b": {
+    "file": "31ba1cff549cc33b.csv",
+    "name": "data/ru-b2b-saas-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T15:34:19+03:00",
+    "blob_sha": "37d251215c41f66831d5d6ae9bdaa170cd871de0"
+  },
+  "fb89d89400aafd56": {
+    "file": "fb89d89400aafd56.md",
+    "name": "research/2026-10-10-ru-b2b-saas-support.md",
+    "date": "2026-10-10T15:34:44+03:00",
+    "blob_sha": "fdc551db43fc7d22e49e600c06ff46f27de59c10"
+  },
+  "6f7b03c37b8caaa8": {
+    "file": "6f7b03c37b8caaa8.csv",
+    "name": "data/ru-devinfra-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T15:40:06+03:00",
+    "blob_sha": "26c9a527a1b7a08ce7960f5a575e86a3e741b0c1"
+  },
+  "1f8395a0dfc30c78": {
+    "file": "1f8395a0dfc30c78.md",
+    "name": "research/2026-10-10-ru-devinfra-support.md",
+    "date": "2026-10-10T15:40:29+03:00",
+    "blob_sha": "d3c9ef7110cacd4940a9fd3179064249e1794fa6"
+  },
+  "b838c9af169170e0": {
+    "file": "b838c9af169170e0.csv",
+    "name": "data/ru-smb-saas-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T15:47:57+03:00",
+    "blob_sha": "ed14616de52fd36306f645a763cd4bd8ccc2391d"
+  },
+  "52ad95af38ebaec3": {
+    "file": "52ad95af38ebaec3.csv",
+    "name": "data/ru-smb-saas-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T15:49:33+03:00",
+    "blob_sha": "545646b8180b03b9abe35de94fad866449a36ccd"
+  },
+  "3691572cd9353b36": {
+    "file": "3691572cd9353b36.md",
+    "name": "research/2026-10-10-ru-smb-saas-support.md",
+    "date": "2026-10-10T15:50:12+03:00",
+    "blob_sha": "a7b6235c35116931dc7bcf34b0d40605b3891e0a"
+  },
+  "ed3b870bef8973f4": {
+    "file": "ed3b870bef8973f4.csv",
+    "name": "data/ru-niche-product-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T15:56:48+03:00",
+    "blob_sha": "8c169ba311f17a445e7b029ac161e8614c7201ed"
+  },
+  "ef5cac5ef8c4653c": {
+    "file": "ef5cac5ef8c4653c.md",
+    "name": "research/2026-10-10-ru-niche-product-support-06.md",
+    "date": "2026-10-10T15:57:16+03:00",
+    "blob_sha": "6e3148846273b25012310c6ea9e249a4423e521f"
+  },
+  "0a62d3b64836263c": {
+    "file": "0a62d3b64836263c.csv",
+    "name": "data/ru-vacancy-first-batch-2026-10-10-07.csv",
+    "date": "2026-10-10T16:06:43+03:00",
+    "blob_sha": "2d715868a2be9ebfe7c0a154d03a4af70427fadc"
+  },
+  "b0bb5a54e36f60a4": {
+    "file": "b0bb5a54e36f60a4.md",
+    "name": "research/2026-10-10-vacancy-first-07.md",
+    "date": "2026-10-10T16:07:03+03:00",
+    "blob_sha": "669d2310125425cf81886df948bee86795a0faab"
+  },
+  "7d3ebf0226a6e9a8": {
+    "file": "7d3ebf0226a6e9a8.csv",
+    "name": "data/ru-devinfra-support-batch-2026-10-10.csv",
+    "date": "2026-10-10T16:14:32+03:00",
+    "blob_sha": "997e31fea08ede84c5e5dc564096c0881660f5ad"
+  },
+  "23cc78120574096b": {
+    "file": "23cc78120574096b.md",
+    "name": "research/2026-10-10-ru-devinfra-support.md",
+    "date": "2026-10-10T16:14:49+03:00",
+    "blob_sha": "33167971e7c415f5d8a314a9986fb9b0e4774a12"
+  },
+  "f116357af5c1b996": {
+    "file": "f116357af5c1b996.csv",
+    "name": "data/ru-vacancy-first-batch-2026-10-10-08.csv",
+    "date": "2026-10-10T16:17:28+03:00",
+    "blob_sha": "de345b3a0279e61fb3f107b3f683f7e77ee0451a"
+  },
+  "0294a06ae17337eb": {
+    "file": "0294a06ae17337eb.md",
+    "name": "research/2026-10-10-vacancy-first-08.md",
+    "date": "2026-10-10T16:17:52+03:00",
+    "blob_sha": "f5dcb68671226f0ec53301a882d9d9e43d9929a9"
+  },
+  "1279a08bbeb114bc": {
+    "file": "1279a08bbeb114bc.csv",
+    "name": "data/ru-junior-entry-support-batch-2026-10-10-09.csv",
+    "date": "2026-10-10T16:23:14+03:00",
+    "blob_sha": "ea36d447f7b7f3fb98cd83807701cb235c21e496"
+  },
+  "09db3d688bf8e800": {
+    "file": "09db3d688bf8e800.md",
+    "name": "research/2026-10-10-junior-entry-support-09.md",
+    "date": "2026-10-10T16:24:30+03:00",
+    "blob_sha": "a85b9bc80493271362e42927c05e626a02a0ed77"
+  },
+  "741d4c1a7c20ab81": {
+    "file": "741d4c1a7c20ab81.csv",
+    "name": "data/ru-junior-ops-infra-batch-2026-10-10-10.csv",
+    "date": "2026-10-10T16:34:07+03:00",
+    "blob_sha": "5fa774921b728cb89cd0547a525bfd123fbebdae"
+  },
+  "5c9a56447e25c52c": {
+    "file": "5c9a56447e25c52c.md",
+    "name": "research/2026-10-10-junior-ops-infra-10.md",
+    "date": "2026-10-10T16:34:41+03:00",
+    "blob_sha": "190352988396e7e148697bc40a1f637691999943"
+  },
+  "5ee9b7ee55685c20": {
+    "file": "5ee9b7ee55685c20.csv",
+    "name": "data/ru-adjacent-ops-support-batch-2026-10-10-10.csv",
+    "date": "2026-10-10T16:39:20+03:00",
+    "blob_sha": "e71d3ba8a25b8cd55829c36e210f4d1626fc4415"
+  },
+  "ac37e2155dcfba21": {
+    "file": "ac37e2155dcfba21.md",
+    "name": "research/2026-10-10-adjacent-ops-support-10.md",
+    "date": "2026-10-10T16:39:52+03:00",
+    "blob_sha": "a54a8ec5b1ff40a92b1aa04febae809d05835f7d"
+  }
+}

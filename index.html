@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Все результаты поиска технической поддержки: фильтры, условия, источники и история.">
+  <title>Support Atlas — каталог вакансий</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./vendor/sql-wasm.js" defer></script>
+  <script src="./catalogue.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="./" aria-label="Support Atlas, главная"><img src="./favicon.svg" width="36" height="36" alt=""><span>support<span class="brand-light">atlas</span><small>КАТАЛОГ ВАКАНСИЙ</small></span></a>
+    <div class="sidebar-label">ВАШЕ ИССЛЕДОВАНИЕ</div>
+    <nav class="views" aria-label="Подборки">
+      <button class="view active" data-view="all"><span>▦ &nbsp;Все записи</span><span id="count-all">—</span></button>
+      <button class="view" data-view="shortlist"><span>◇ &nbsp;Для отклика</span><span id="count-shortlist">—</span></button>
+      <button class="view" data-view="vacancies"><span>☷ &nbsp;Конкретные роли</span><span id="count-vacancies">—</span></button>
+      <button class="view" data-view="watch"><span>◉ &nbsp;Мониторинг компаний</span><span id="count-watch">—</span></button>
+    </nav>
+    <div class="filter-heading"><span class="sidebar-label">ФИЛЬТРЫ</span><button id="reset" class="text-button">Сбросить</button></div>
+    <form id="filters">
+      <fieldset class="status-filter"><legend>Статус исследования</legend><div id="status-options"></div></fieldset>
+      <label class="filter-label" for="remote-filter">Формат работы</label><select id="remote-filter" name="fully_remote"><option value="">Любой формат</option><option value="yes">Полностью удалённо</option><option value="unknown">Нужно уточнить</option><option value="no">Офис / гибрид</option></select>
+      <div class="fit-heading"><label class="filter-label" for="fit-filter">Минимальный Fit</label><output id="fit-value" for="fit-filter">0</output></div><input id="fit-filter" name="min_fit" type="range" min="0" max="100" step="1" value="0">
+      <label class="filter-label" for="company-filter">Компания</label><select id="company-filter" name="company"><option value="">Все компании</option></select>
+      <label class="filter-label" for="skill-filter">Навык в описании</label><select id="skill-filter" name="skill"><option value="">Любой навык</option></select>
+      <label class="filter-label" for="channel-filter">Канал поддержки</label><select id="channel-filter" name="channel"><option value="">Любой канал</option></select>
+      <details class="more-filters"><summary>Дополнительные фильтры</summary>
+        <label class="filter-label" for="type-filter">Тип записи</label><select id="type-filter" name="record_type"><option value="">Все записи</option><option value="vacancy_lead">Конкретная роль</option><option value="company_watchlist">Мониторинг компании</option></select>
+        <label class="filter-label" for="category-filter">Категория</label><select id="category-filter" name="category"><option value="">Все категории</option></select>
+        <label class="filter-label" for="evidence-filter">Подтверждение</label><select id="evidence-filter" name="evidence_level"><option value="">Все источники</option></select>
+        <label class="filter-label" for="source-filter">Исходный файл</label><select id="source-filter" name="source_file"><option value="">Все файлы</option></select>
+        <label class="filter-label" for="review-filter">Качество данных</label><select id="review-filter" name="review_required"><option value="">Любое</option><option value="1">Нужна проверка</option><option value="0">Без флага проверки</option></select>
+      </details>
+    </form>
+    <div class="sidebar-foot"><span class="online-dot"></span> GitHub Pages <span class="sqlite-label">SQLite</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span><span class="breadcrumb">Рабочее пространство</span><span class="slash">/</span>Вакансии</span><span class="snapshot" id="snapshot">Загрузка базы…</span></header>
+    <section class="intro"><div><p class="eyebrow">TECHNICAL SUPPORT · INFRASTRUCTURE · DEVOPS</p><h1>Следующая работа —<br><span>в деталях.</span></h1><p class="intro-copy">Всё исследование в одной таблице.<br>Сравнивайте условия, проверяйте источники, выбирайте своё.</p></div><div class="intro-mark" aria-hidden="true"><span class="mark-line"></span><span class="mark-line short"></span><span class="mark-line"></span><span class="mark-dot"></span></div></section>
+    <section class="stats" aria-label="Сводка базы"><div><span class="stat-label">Записей в базе</span><strong id="stat-total">—</strong><small id="stat-companies">— компаний</small></div><div><span class="stat-label">Соответствуют фильтрам*</span><strong id="stat-pass">—</strong><small>Исходный статус PASS</small></div><div><span class="stat-label">Нужно уточнить условия</span><strong id="stat-conditional">—</strong><small>Исходный статус CONDITIONAL</small></div><div><span class="stat-label">Исходных наблюдений</span><strong id="stat-observations">—</strong><small id="stat-files">Все CSV и история</small></div></section>
+    <p class="data-note" id="data-note">* Статусы перенесены из исследования. Среди записей есть архивные роли; PASS требует чтения условий и замечаний.</p>
+    <section class="catalogue" aria-labelledby="table-title">
+      <div class="catalogue-heading"><h2 id="table-title">Все записи <span id="result-total" class="count-pill">—</span></h2><span class="save-hint">Ваш набор столбцов сохраняется</span></div>
+      <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Компания, роль, Linux, VPN, график…" aria-label="Поиск по всем условиям"><kbd>/</kbd></label><button class="button" id="columns-button">▥ &nbsp;Столбцы <span id="visible-count"></span></button><button class="button" id="export-button">↓ &nbsp;Экспорт CSV</button></div>
+      <div class="active-filters" id="active-filters" aria-label="Активные фильтры"></div>
+      <div class="error-banner" id="error" role="alert" hidden></div>
+      <div class="table-wrap" id="table-wrap"><table id="vacancies-table"><caption class="sr-only">Результаты исследования вакансий. Нажмите на строку или название роли, чтобы открыть все условия и историю.</caption><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
+      <div class="empty-state" id="empty" hidden><span aria-hidden="true">⌕</span><h3>Ничего не нашлось</h3><p>Попробуйте другой запрос или смягчите фильтры.</p><button class="button" id="empty-reset">Сбросить фильтры</button></div>
+      <footer class="table-footer"><span id="range-info" aria-live="polite">Загрузка…</span><div class="pagination"><label for="page-size">На странице</label><select id="page-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><button class="button icon-button" id="prev-page" aria-label="Предыдущая страница">←</button><span id="page-info">1 / 1</span><button class="button icon-button" id="next-page" aria-label="Следующая страница">→</button></div></footer>
+    </section>
+    <footer class="main-footer"><span>Support Atlas <span class="footer-dot">·</span> Источник: support-vendor-research</span><span>Данные и история доступны в карточке записи</span></footer>
+  </main>
+  <dialog id="columns-dialog" class="columns-dialog"><div class="dialog-heading"><div><p class="eyebrow">ВАШ ВИД ТАБЛИЦЫ</p><h2>Выберите столбцы</h2></div><button class="close-button" id="close-columns" aria-label="Закрыть выбор столбцов">×</button></div><p class="muted">Можно показать любое поле из базы. Для чтения длинных условий откройте карточку записи.</p><label class="column-search"><input id="column-search" type="search" placeholder="Найти столбец…" aria-label="Поиск столбца"></label><div class="column-presets"><button class="button" data-preset="default">Основные</button><button class="button" data-preset="conditions">Условия работы</button><button class="button" data-preset="all">Все столбцы</button></div><div id="column-options" class="column-options"></div><div class="dialog-footer"><span id="column-selection-count"></span><button class="button primary" id="done-columns">Готово</button></div></dialog>
+  <dialog id="detail-dialog" class="detail-dialog"><div class="detail-top"><span class="eyebrow">КАРТОЧКА ИССЛЕДОВАНИЯ</span><button class="close-button" id="close-detail" aria-label="Закрыть карточку">×</button></div><div id="detail-content"></div></dialog>
+</body>
+</html>
