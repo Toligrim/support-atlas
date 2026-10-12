@@ -6,9 +6,9 @@ window.SupportAtlasData = (() => {
   let db, meta, sourceLinks;
   const ready = (async () => {
     const [info, bytes, SQL] = await Promise.all([
-      fetch("./metadata.json").then((r) => { if (!r.ok) throw new Error("Не удалось загрузить описание базы"); return r.json(); }),
-      fetch("./vacancies.sqlite").then((r) => { if (!r.ok) throw new Error("Не удалось загрузить SQLite"); return r.arrayBuffer(); }),
-      initSqlJs({locateFile: (file) => `./vendor/${file}`}),
+      fetch("/metadata.json").then((r) => { if (!r.ok) throw new Error("Не удалось загрузить описание базы"); return r.json(); }),
+      fetch("/vacancies.sqlite").then((r) => { if (!r.ok) throw new Error("Не удалось загрузить SQLite"); return r.arrayBuffer(); }),
+      initSqlJs({locateFile: (file) => `/vendor/${file}`}),
     ]);
     meta = info.meta;
     sourceLinks = info.source_links;
@@ -102,7 +102,7 @@ window.SupportAtlasData = (() => {
   function sourceLink(value) {
     try {
       const url = new URL(value), source = sourceLinks?.[url.origin + url.pathname];
-      return source ? `./source.html?id=${source}${url.hash}` : value;
+      return source ? `/source.html?id=${source}${url.hash}` : value;
     } catch { return value; }
   }
   return {request, sourceLink};

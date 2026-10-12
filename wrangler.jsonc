@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "support-atlas",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-12",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/journal", "/journal/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "support-atlas-journal",
+      "database_id": "34d78233-9647-4881-a073-0d11d5d04544",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
