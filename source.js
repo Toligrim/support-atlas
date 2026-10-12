@@ -5,10 +5,10 @@
     if (!response.ok) throw new Error("Исходный файл недоступен");
     return json ? response.json() : response.text();
   };
-  const sources = await checked("./sources.json", true);
+  const sources = await checked("/sources.json", true);
   const id = new URLSearchParams(location.search).get("id"), source = sources[id];
   if (!source) throw new Error("Неизвестный исходный файл");
-  const text = await checked(`./sources/${source.file}`);
+  const text = await checked(`/sources/${source.file}`);
   document.querySelector("#title").textContent = source.name;
   document.querySelector("#description").textContent = `Снимок исследования от ${source.date}. Git blob: ${source.blob_sha}`;
   document.title = `${source.name} — Support Atlas`;

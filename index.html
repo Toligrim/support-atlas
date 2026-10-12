@@ -2,21 +2,31 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; base-uri 'none'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Все результаты поиска технической поддержки: фильтры, условия, источники и история.">
   <title>Support Atlas — каталог вакансий</title>
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
-  <script src="./tracker.js" defer></script>
-  <script src="./github-store.js" defer></script>
-  <script src="./vendor/sql-wasm.js" defer></script>
-  <script src="./catalogue.js" defer></script>
-  <script src="./app.js" defer></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/tracker.js" defer></script>
+  <script src="/journal-store.js" defer></script>
+  <script src="/vendor/sql-wasm.js" defer></script>
+  <script src="/catalogue.js" defer></script>
+  <script src="/app.js" defer></script>
 </head>
 <body>
+  <section id="journal-login" aria-labelledby="journal-login-title">
+    <form id="journal-login-form" class="journal-login-card">
+      <p class="eyebrow">ЛИЧНЫЙ ЖУРНАЛ</p>
+      <h1 id="journal-login-title">Вход</h1>
+      <p class="muted">Введите пароль, чтобы открыть личные отклики.</p>
+      <label class="application-field"><span>Пароль журнала</span><input id="journal-password" type="password" required minlength="20" maxlength="1024" autocomplete="current-password" spellcheck="false"></label>
+      <p id="journal-login-message" class="application-message" role="status"></p>
+      <button class="button primary" type="submit">Продолжить</button>
+    </form>
+  </section>
   <aside class="sidebar">
-    <a class="brand" href="./" aria-label="Support Atlas, главная"><img src="./favicon.svg" width="36" height="36" alt=""><span>support<span class="brand-light">atlas</span><small>КАТАЛОГ ВАКАНСИЙ</small></span></a>
+    <a class="brand" href="/" aria-label="Support Atlas, главная"><img src="/favicon.svg" width="36" height="36" alt=""><span>support<span class="brand-light">atlas</span><small>КАТАЛОГ ВАКАНСИЙ</small></span></a>
     <div class="sidebar-label">ВАШЕ ИССЛЕДОВАНИЕ</div>
     <nav class="views" aria-label="Подборки">
       <button class="view active" data-view="all"><span>▦ &nbsp;Все записи</span><span id="count-all">—</span></button>
@@ -49,7 +59,7 @@
       <select id="application-follow-up-filter"><option value="">Любая дата</option><option value="overdue">Просрочено</option><option value="today">Сегодня</option><option value="upcoming">Ближайшие 7 дней</option><option value="scheduled">С назначенной датой</option><option value="none">Без даты</option></select>
       <label class="application-only"><input id="application-only-filter" type="checkbox"> Только мои отклики</label>
     </section>
-    <div class="sidebar-foot"><span class="online-dot"></span> GitHub Pages <span class="sqlite-label">SQLite</span></div>
+    <div class="sidebar-foot"><span class="online-dot"></span> Cloudflare Workers <span class="sqlite-label">SQLite</span></div>
   </aside>
   <main>
     <header class="topbar"><span><span class="breadcrumb">Рабочее пространство</span><span class="slash">/</span>Вакансии</span><span class="snapshot" id="snapshot">Загрузка базы…</span></header>
@@ -58,8 +68,8 @@
     <p class="data-note" id="data-note">* Статусы перенесены из исследования. Среди записей есть архивные роли; PASS требует чтения условий и замечаний.</p>
     <section class="catalogue" aria-labelledby="table-title">
       <div class="catalogue-heading"><h2 id="table-title">Все записи <span id="result-total" class="count-pill">—</span></h2><span class="save-hint">Ваш набор столбцов сохраняется</span></div>
-      <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Компания, роль, Linux, VPN, график…" aria-label="Поиск по всем условиям"><kbd>/</kbd></label><button class="button" id="columns-button">▥ &nbsp;Столбцы <span id="visible-count"></span></button><button class="button" id="export-button">↓ &nbsp;Экспорт CSV</button><button class="button" data-journal id="backup-export-button">⇧ &nbsp;Резервная копия</button><button class="button" data-journal id="backup-import-button">⇩ &nbsp;Импорт копии</button><button class="button primary" data-journal id="connect-button">Подключить журнал</button><button class="button" data-journal id="refresh-journal-button" hidden>Обновить журнал</button><button class="button" data-journal id="disconnect-button" hidden>Отключить</button><input id="backup-import-file" type="file" accept="application/json,.json" hidden></div>
-      <p class="privacy-note" data-journal id="application-storage-note">Для личного журнала подключите приватный GitHub-репозиторий. Каталог вакансий работает и без подключения.</p>
+      <div class="toolbar"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Компания, роль, Linux, VPN, график…" aria-label="Поиск по всем условиям"><kbd>/</kbd></label><button class="button" id="columns-button">▥ &nbsp;Столбцы <span id="visible-count"></span></button><button class="button" id="export-button">↓ &nbsp;Экспорт CSV</button><button class="button" data-journal id="backup-export-button">⇧ &nbsp;Резервная копия</button><button class="button" data-journal id="backup-import-button">⇩ &nbsp;Импорт копии</button><button class="button" data-journal id="refresh-journal-button" hidden>Обновить журнал</button><button class="button" data-journal id="disconnect-button" hidden>Выйти</button><input id="backup-import-file" type="file" accept="application/json,.json" hidden></div>
+      <p class="privacy-note" data-journal id="application-storage-note">Откройте личный журнал по секретной ссылке. Каталог вакансий остаётся публичным.</p>
       <div class="backup-preview" id="backup-preview" hidden></div>
       <div class="active-filters" id="active-filters" aria-label="Активные фильтры"></div>
       <div class="error-banner" id="error" role="alert" hidden></div>
@@ -71,19 +81,6 @@
   </main>
   <dialog id="columns-dialog" class="columns-dialog"><div class="dialog-heading"><div><p class="eyebrow">ВАШ ВИД ТАБЛИЦЫ</p><h2>Выберите столбцы</h2></div><button class="close-button" id="close-columns" aria-label="Закрыть выбор столбцов">×</button></div><p class="muted">Можно показать любое поле из базы. Для чтения длинных условий откройте карточку записи.</p><label class="column-search"><input id="column-search" type="search" placeholder="Найти столбец…" aria-label="Поиск столбца"></label><div class="column-presets"><button class="button" data-preset="default">Основные</button><button class="button" data-preset="conditions">Условия работы</button><button class="button" data-preset="all">Все столбцы</button></div><div id="column-options" class="column-options"></div><div class="dialog-footer"><span id="column-selection-count"></span><button class="button primary" id="done-columns">Готово</button></div></dialog>
   <dialog id="backup-dialog" class="columns-dialog"><div class="dialog-heading"><div><p class="eyebrow">ПЕРЕНОС ЛИЧНОГО ЖУРНАЛА</p><h2>Импорт резервной копии</h2></div><button class="close-button" id="close-backup" aria-label="Закрыть импорт">×</button></div><div id="backup-summary" class="detail-text"></div><label class="application-only"><input id="backup-replace-conflicts" type="checkbox"> Заменить совпадающие записи из этой копии</label><p class="muted">Без отметки совпадения останутся в журнале как есть. Новые записи будут добавлены.</p><div class="dialog-footer"><button class="button" id="cancel-backup">Отмена</button><button class="button primary" id="confirm-backup">Импортировать</button></div></dialog>
-  <dialog id="connection-dialog" class="columns-dialog">
-    <div class="dialog-heading"><div><p class="eyebrow">ЛИЧНЫЙ ЖУРНАЛ</p><h2>Подключение</h2></div><button class="close-button" id="close-connection" aria-label="Закрыть подключение">×</button></div>
-    <form id="connection-form" class="application-form">
-      <label class="application-field"><span>Токен доступа GitHub</span><input id="github-token" type="password" required autocomplete="off" spellcheck="false"></label>
-      <details class="connection-settings"><summary>Настройки подключения</summary>
-        <div class="application-fields"><label class="application-field"><span>Владелец</span><input id="github-owner" required value="Toligrim" autocomplete="off"></label><label class="application-field"><span>Репозиторий</span><input id="github-repository" required value="support-atlas-journal" autocomplete="off"></label><label class="application-field"><span>Ветка</span><input id="github-branch" required value="main" autocomplete="off"></label></div>
-        <p class="muted">Выберите приватный репозиторий. Для fine-grained токена дайте доступ только к нему и разрешение Contents: Read and write. Токен хранится в памяти вкладки и очищается при отключении или закрытии.</p>
-        <p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Создать токен в GitHub ↗</a></p>
-      </details>
-      <p id="connection-message" class="application-message" role="status"></p>
-      <div class="dialog-footer"><button class="button" id="cancel-connection" type="button">Отмена</button><button class="button primary" type="submit">Подключить</button></div>
-    </form>
-  </dialog>
   <dialog id="detail-dialog" class="detail-dialog"><div class="detail-top"><span class="eyebrow">КАРТОЧКА ИССЛЕДОВАНИЯ</span><button class="close-button" id="close-detail" aria-label="Закрыть карточку">×</button></div><div id="detail-content"></div></dialog>
 </body>
 </html>

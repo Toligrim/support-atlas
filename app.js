@@ -14,12 +14,13 @@ const CHANNEL = {tickets: "Тикеты", email: "Email", chat: "Чат", phone_
 const FLAGS = {PASS_WITHOUT_EMPLOYER_ORIGINAL: "PASS без первичного источника", REMOTE_NOT_CONFIRMED: "Удалёнка не подтверждена", NON_REMOTE_STATUS_CONFLICT: "Конфликт: офис / гибрид", STATUS_DISAGREEMENT_BETWEEN_FILES: "Источники расходятся в статусе", HISTORY_ONLY: "Только исторические данные", CHECK_DATE_INFERRED_FROM_COMMIT: "Дата взята из коммита", PASS_SCHEDULE_UNCONFIRMED: "График PASS не подтверждён"};
 const TYPES = {vacancy_lead: "Конкретная роль", company_watchlist: "Мониторинг компании"};
 const APPLICATION_FIELD = "my_application";
-// This selects the personal interface; GitHub authorization protects the data.
-const journalMode = location.hash === "#journal";
+// Older journal bookmarks used a fragment; the Worker now serves /journal.
+const legacyJournalBookmark = location.hash === "#journal";
+const journalMode = location.pathname === "/journal" || legacyJournalBookmark;
+if (legacyJournalBookmark && location.pathname === "/") history.replaceState(null, "", `/journal${location.search}`);
 document.documentElement.classList.toggle("journal-mode", journalMode);
-const state = {meta: null, columns: [], page: 1, pages: 1, total: 0, pageSize: 25, sort: "priority", direction: "desc", view: "all", controller: null, detailController: null, applications: new Map(), catalogueRows: new Map(), catalogueIds: null, filteredRows: [], applicationStore: null, pendingConnectionStore: null, connectionGeneration: 0, applicationStatus: "", followUp: "", onlyApplications: false, pendingBackup: null, importInProgress: false, pendingSaves: 0, objectUrls: new Set()};
+const state = {meta: null, columns: [], page: 1, pages: 1, total: 0, pageSize: 25, sort: "priority", direction: "desc", view: "all", controller: null, detailController: null, applications: new Map(), catalogueRows: new Map(), catalogueIds: null, filteredRows: [], applicationStore: null, connectionGeneration: 0, applicationStatus: "", followUp: "", onlyApplications: false, pendingBackup: null, importInProgress: false, pendingSaves: 0, objectUrls: new Set()};
 const storageKey = "support-atlas.preferences.v1";
-const journalConfigKey = "support-atlas.journal-connection.v1";
 let timer;
 
 async function request(path, signal) {
@@ -396,7 +397,7 @@ async function renderApplicationEditor(container, row, sourceRecord = null) {
   const store = state.applicationStore;
   const generation = state.connectionGeneration || 0;
   if (!store) {
-    section.append(make("p", "muted", "Личный журнал сейчас недоступен: хранилище не подключено. Сохранение требует активного личного хранилища."));
+    section.append(make("p", "muted", "Войдите в личный журнал, чтобы просматривать и сохранять личные записи."));
     insertApplicationEditor(container, section); return;
   }
   let baseline = sourceRecord;
@@ -405,7 +406,6 @@ async function renderApplicationEditor(container, row, sourceRecord = null) {
   if (state.applicationStore !== store || generation !== (state.connectionGeneration || 0) || !$("#detail-dialog").open) return;
   const application = baseline || blankApplication(row, "planned");
   const baseRevision = baseline?.revision ?? null;
-  const files = (application.attachments || []).map((item) => ({...item}));
   const form = make("form", "application-form"); form.id = "application-editor-form";
   form.append(formField("Этап", "status", "select", application.status || "none", {choices: Object.entries(window.SupportAtlasTracker.STATUS).map(([value, label]) => [value, label])}));
   const fields = make("div", "application-fields");
@@ -416,29 +416,8 @@ async function renderApplicationEditor(container, row, sourceRecord = null) {
   const addProof = make("button", "button", "＋ Добавить ссылку"); addProof.type = "button"; addProof.addEventListener("click", () => { appendProofRow(proofs, {}, () => { form.dataset.dirty = "1"; }); form.dataset.dirty = "1"; });
   const proofSection = make("section", "application-subsection"); proofSection.append(make("h4", "", "Ссылки на подтверждения"), proofs, addProof); form.append(proofSection);
   const fileSection = make("section", "application-subsection");
-  fileSection.append(make("h4", "", "Файлы и скриншоты"), make("p", "muted", "До 10 МБ на файл, максимум 10 файлов и 20 МБ на вакансию. Файлы остаются в личном хранилище."));
-  const fileInput = make("input"); fileInput.type = "file"; fileInput.multiple = true; fileInput.setAttribute("aria-label", "Добавить файлы к отклику");
-  const fileList = make("div", "attachment-list");
-  const updateFiles = () => attachmentList(fileList, files, (id) => { const i = files.findIndex((file) => file.id === id); if (i >= 0) files.splice(i, 1); form.dataset.dirty = "1"; updateDirty(); updateFiles(); });
-  fileInput.addEventListener("change", async () => {
-    try {
-      const selected = [...fileInput.files];
-      if (files.length + selected.length > window.SupportAtlasTracker.MAX_ATTACHMENTS) throw new Error("Можно прикрепить не более 10 файлов");
-      let total = files.reduce((sum, file) => sum + file.size, 0);
-      for (const file of selected) {
-        if (file.size > window.SupportAtlasTracker.MAX_FILE_BYTES) throw new Error(`Файл «${file.name}» больше 10 МБ`);
-        total += file.size;
-        if (total > window.SupportAtlasTracker.MAX_APPLICATION_BYTES) throw new Error("Суммарный размер файлов превышает 20 МБ");
-      }
-      form.dataset.pending = "1"; updateDirty();
-      const staged = await Promise.all(selected.map(async (file) => ({id: randomId(), name: file.name, type: file.type || "application/octet-stream", size: file.size, data: await fileBase64(file)})));
-      files.push(...staged);
-      form.dataset.dirty = "1"; updateDirty(); updateFiles();
-    } catch (error) { message.textContent = error.message; message.className = "application-message error-banner"; }
-    finally { form.dataset.pending = ""; updateDirty(); }
-    fileInput.value = "";
-  });
-  fileSection.append(fileInput, fileList); form.append(fileSection); updateFiles();
+  fileSection.append(make("h4", "", "Файлы и скриншоты"), make("p", "muted", "Бинарные вложения в Cloudflare Free временно не поддерживаются. Добавляйте ссылки на внешние документы в разделе «Ссылки на подтверждения»."));
+  form.append(fileSection);
   const history = make("details", "application-history");
   history.append(make("summary", "", `История этапов (${(application.events || []).length})`));
   const historyList = make("ol", "application-events");
@@ -452,7 +431,6 @@ async function renderApplicationEditor(container, row, sourceRecord = null) {
   const updateDirty = () => {
     const saving = form.dataset.saving === "1", pending = form.dataset.pending === "1";
     for (const control of form.elements) control.disabled = saving;
-    fileInput.disabled = saving || pending;
     save.disabled = saving || pending;
     $("#close-detail").disabled = saving;
     updateConnectionControls();
@@ -468,7 +446,7 @@ async function renderApplicationEditor(container, row, sourceRecord = null) {
     try {
       const oldStatus = application.status || "none", newStatus = String(values.get("status"));
       const proofLinks = [...proofs.querySelectorAll(".proof-row")].map((item) => ({label: item.querySelector('input[aria-label="Подпись ссылки"]').value.trim(), url: item.querySelector('input[aria-label="Ссылка на подтверждение"]').value.trim()})).filter((item) => item.label || item.url);
-      const changed = {...application, status: newStatus, application_date: String(values.get("application_date")), channel: String(values.get("channel")).trim(), contact: String(values.get("contact")).trim(), resume_version: String(values.get("resume_version")).trim(), notes: String(values.get("notes")), follow_up_date: String(values.get("follow_up_date")), proof_links: proofLinks, attachments: files, snapshot: application.snapshot || applicationSnapshot(row)};
+      const changed = {...application, status: newStatus, application_date: String(values.get("application_date")), channel: String(values.get("channel")).trim(), contact: String(values.get("contact")).trim(), resume_version: String(values.get("resume_version")).trim(), notes: String(values.get("notes")), follow_up_date: String(values.get("follow_up_date")), proof_links: proofLinks, attachments: [], snapshot: application.snapshot || applicationSnapshot(row)};
       if (oldStatus !== newStatus) changed.events = [...(application.events || []), {at: new Date().toISOString(), from: oldStatus, to: newStatus}];
       window.SupportAtlasTracker.validateApplication(changed);
       form.dataset.saving = "1"; updateDirty(); save.disabled = true; message.textContent = "Сохраняю личную запись…"; message.className = "application-message";
@@ -654,7 +632,7 @@ function hasPendingApplicationWork() {
 }
 function requestCloseDetail() {
   const form = $("#application-editor-form");
-  if (form?.dataset.saving === "1" || form?.dataset.pending === "1") { form.querySelector(".application-message").textContent = form.dataset.saving === "1" ? "Сохранение выполняется. Дождитесь ответа GitHub." : "Файлы ещё подготавливаются. Дождитесь завершения."; return false; }
+  if (form?.dataset.saving === "1" || form?.dataset.pending === "1") { form.querySelector(".application-message").textContent = form.dataset.saving === "1" ? "Сохранение выполняется. Дождитесь ответа сервера." : "Дождитесь завершения операции."; return false; }
   if (hasUnsavedApplicationEdit() && !window.confirm("Закрыть карточку и потерять несохранённые изменения?")) return false;
   if (form) form.dataset.dirty = "";
   $("#detail-dialog").close();
@@ -664,67 +642,13 @@ function updateConnectionControls() {
   const connected = Boolean(state.applicationStore);
   const form = $("#application-editor-form");
   const busy = Boolean(state.importInProgress || state.pendingBackup || state.pendingSaves || form?.dataset.saving === "1");
-  $("#connect-button").textContent = connected ? "Настройки журнала" : "Подключить журнал";
-  $("#connect-button").disabled = busy;
   $("#refresh-journal-button").hidden = !connected;
   $("#disconnect-button").hidden = !connected;
   $("#disconnect-button").disabled = busy || form?.dataset.pending === "1";
+  $("#disconnect-button").textContent = "Выйти";
   $("#backup-export-button").disabled = !connected;
   $("#backup-import-button").disabled = !connected;
-  const config = state.applicationStore;
-  if (config) showApplicationMessage(`Подключено к приватному GitHub-репозиторию ${config.owner}/${config.repository}, ветка ${config.branch}. Токен хранится только в памяти этой вкладки.`);
-}
-function cancelConnection() {
-  state.connectionGeneration = (state.connectionGeneration || 0) + 1;
-  state.pendingConnectionStore?.disconnect();
-  state.pendingConnectionStore = null;
-  $("#github-token").value = "";
-  $("#connection-form button[type=submit]").disabled = false;
-  $("#connection-dialog").close();
-}
-function rememberJournalConfig(config) {
-  try { localStorage.setItem(journalConfigKey, JSON.stringify(config)); } catch { /* Remembering the address is optional and never includes the token. */ }
-}
-function restoreJournalConfig() {
-  try {
-    const config = JSON.parse(localStorage.getItem(journalConfigKey) || "{}");
-    if (typeof config.owner === "string") $("#github-owner").value = config.owner;
-    if (typeof config.repository === "string") $("#github-repository").value = config.repository;
-    if (typeof config.branch === "string") $("#github-branch").value = config.branch;
-  } catch { /* Use the documented private-repository defaults. */ }
-}
-async function connectJournal(event) {
-  event.preventDefault();
-  if (state.importInProgress) return;
-  const generation = (state.connectionGeneration || 0) + 1;
-  state.connectionGeneration = generation;
-  const message = $("#connection-message"), button = $("#connection-form button[type=submit]");
-  const config = {owner: $("#github-owner").value.trim(), repository: $("#github-repository").value.trim(), branch: $("#github-branch").value.trim()};
-  const tokenInput = $("#github-token"), token = tokenInput.value;
-  let store = null;
-  button.disabled = true; message.className = "application-message"; message.textContent = "Проверяю доступ и приватность репозитория…";
-  try {
-    store = new window.SupportAtlasGitHubStore(config, token);
-    state.pendingConnectionStore = store;
-    await store.connect();
-    if (generation !== state.connectionGeneration) { store.disconnect(); return; }
-    state.pendingConnectionStore = null;
-    state.applicationStore?.disconnect(); state.applicationStore = store; state.applications.clear();
-    state.controller?.abort(); state.detailController?.abort(); state.catalogueRows.clear(); state.catalogueIds = null;
-    if ($("#detail-dialog").open) $("#detail-dialog").close();
-    $("#detail-content").replaceChildren(); $("#table-body").replaceChildren(); state.filteredRows = [];
-    rememberJournalConfig(config);
-    await reloadApplications(); updateConnectionControls();
-    $("#connection-dialog").close();
-    await refresh();
-  } catch (error) {
-    if (generation !== state.connectionGeneration) return;
-    if (state.pendingConnectionStore === store) state.pendingConnectionStore = null;
-    store?.disconnect();
-    message.className = "application-message error-banner"; message.textContent = error.message;
-  } finally {
-    if (generation === state.connectionGeneration) { tokenInput.value = ""; button.disabled = false; }
-  }
+  if (connected) showApplicationMessage("Личный журнал синхронизируется через защищённую сессию.");
 }
 async function refreshJournal() {
   const store = state.applicationStore, generation = state.connectionGeneration || 0;
@@ -734,24 +658,65 @@ async function refreshJournal() {
     if (state.applicationStore !== store || generation !== (state.connectionGeneration || 0)) return;
     await reloadApplications();
     if (state.applicationStore !== store || generation !== (state.connectionGeneration || 0)) return;
-    showApplicationMessage("Личный журнал обновлён из приватного репозитория."); await refresh();
+    showApplicationMessage("Личный журнал обновлён."); await refresh();
   } catch (error) {
     if (state.applicationStore === store && generation === (state.connectionGeneration || 0)) showApplicationMessage(`Не удалось обновить журнал: ${error.message}`, true);
   }
 }
-function disconnectJournal() {
-  if (state.pendingSaves) { showApplicationMessage("Дождитесь завершения сохранения.", true); return; }
-  if (state.importInProgress || state.pendingBackup) { showApplicationMessage("Завершите или отмените импорт перед отключением журнала.", true); return; }
-  const form = $("#application-editor-form");
-  if (form?.dataset.saving === "1" || form?.dataset.pending === "1" || (hasUnsavedApplicationEdit() && !requestCloseDetail())) return;
-  if (!window.confirm("Отключить приватный журнал в этой вкладке? На GitHub записи останутся без изменений.")) return;
+function clearJournalState(message = "") {
   state.connectionGeneration = (state.connectionGeneration || 0) + 1;
   state.controller?.abort(); state.detailController?.abort();
   state.applicationStore?.disconnect(); state.applicationStore = null; state.applications.clear(); clearObjectUrls();
   if ($("#detail-dialog").open) $("#detail-dialog").close();
-  $("#detail-content").replaceChildren(); $("#connection-message").textContent = "";
-  $("#table-body").replaceChildren(); state.filteredRows = []; $("#count-applications").textContent = "0";
-  updateConnectionControls(); showApplicationMessage("Журнал отключён. Личные данные удалены из памяти страницы."); refresh();
+  $("#detail-content").replaceChildren(); $("#table-body").replaceChildren(); state.filteredRows = [];
+  $("#count-applications").textContent = "0";
+  document.documentElement.classList.remove("journal-authenticated");
+  $("#journal-password").value = "";
+  $("#journal-login-message").textContent = message;
+  updateConnectionControls();
+}
+async function logoutJournal() {
+  if (state.pendingSaves) { showApplicationMessage("Дождитесь завершения сохранения.", true); return; }
+  if (state.importInProgress || state.pendingBackup) { showApplicationMessage("Завершите или отмените импорт перед выходом.", true); return; }
+  const form = $("#application-editor-form");
+  if (form?.dataset.saving === "1" || form?.dataset.pending === "1" || (hasUnsavedApplicationEdit() && !requestCloseDetail())) return;
+  try {
+    await state.applicationStore?.logout();
+    clearJournalState("Вы вышли. Для повторного входа введите пароль.");
+  } catch (error) { showApplicationMessage(`Не удалось завершить сессию: ${error.message}`, true); }
+}
+async function loginJournal(event) {
+  event.preventDefault();
+  const form = $("#journal-login-form"), button = form.querySelector("button[type=submit]"), message = $("#journal-login-message");
+  const store = new window.SupportAtlasJournalStore();
+  button.disabled = true; message.className = "application-message"; message.textContent = "Проверяю пароль…";
+  try {
+    await store.login($("#journal-password").value);
+    state.applicationStore = store; state.applications.clear();
+    document.documentElement.classList.add("journal-authenticated");
+    form.reset(); message.textContent = "";
+    await reloadApplications(); updateConnectionControls(); await refresh();
+  } catch (error) {
+    message.className = "application-message error-banner";
+    message.textContent = error.message.includes("404") ? "Сначала откройте секретную ссылку журнала." : error.message;
+  } finally { button.disabled = false; $("#journal-password").focus(); }
+}
+async function checkJournalSession() {
+  if (!journalMode) return;
+  const store = new window.SupportAtlasJournalStore();
+  try {
+    const session = await store.session();
+    if (!session.authenticated) return;
+    state.applicationStore = store;
+    document.documentElement.classList.add("journal-authenticated");
+    await reloadApplications();
+  } catch (error) {
+    $("#journal-login-message").textContent = error.message.includes("404") ? "Для входа сначала откройте секретную ссылку журнала." : error.message;
+  }
+}
+function expireJournalSession() {
+  if (!state.applicationStore) return;
+  clearJournalState("Сессия завершилась. Войдите снова.");
 }
 function csvCell(value) {
   let text = String(value ?? "");
@@ -791,20 +756,21 @@ async function exportBackup() {
     const content = JSON.stringify(window.SupportAtlasTracker.backup(records), null, 2);
     if (new Blob([content]).size > window.SupportAtlasTracker.MAX_BACKUP_BYTES) throw new Error("Резервная копия превышает лимит 100 МБ");
     const link = make("a"); link.href = URL.createObjectURL(new Blob([content], {type: "application/json;charset=utf-8"})); link.download = `support-atlas-applications-${today()}.json`; document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(link.href), 10000);
-    showApplicationMessage(`Резервная копия скачана: ${records.length} записей, включая содержимое файлов.`);
+    showApplicationMessage(`Резервная копия скачана: ${records.length} записей.`);
   } catch (error) { showApplicationMessage(`Не удалось создать резервную копию: ${error.message}`, true); }
 }
 async function previewBackup(file) {
   try {
     if (file.size > window.SupportAtlasTracker.MAX_BACKUP_BYTES) throw new Error("Размер резервной копии превышает 100 МБ");
     const parsed = window.SupportAtlasTracker.parseBackup(await file.text());
+    if (parsed.applications.some((application) => application.attachments.length)) throw new Error("Копия содержит бинарные вложения, которые не поддерживаются в Cloudflare Free. Сохраните их отдельно и удалите из копии перед импортом.");
     const store = requireApplicationStore(), generation = state.connectionGeneration || 0;
     const existing = await store.list();
     if (store !== state.applicationStore || generation !== (state.connectionGeneration || 0)) return;
     const byId = new Map(existing.map((record) => [record.record_id, record]));
     const conflicts = parsed.applications.filter((record) => byId.has(record.record_id));
     state.pendingBackup = {applications: parsed.applications, expectedRevisions: Object.fromEntries(parsed.applications.map((record) => [record.record_id, byId.get(record.record_id)?.revision ?? null]))};
-    $("#backup-summary").textContent = `Файл содержит ${parsed.applications.length} записей и ${parsed.applications.reduce((sum, app) => sum + app.attachments.length, 0)} файловых вложений. ${conflicts.length} совпадают с текущими записями; ${parsed.applications.length - conflicts.length} будут добавлены. Проверка завершена до записи.`;
+    $("#backup-summary").textContent = `Файл содержит ${parsed.applications.length} записей. ${conflicts.length} совпадают с текущими записями; ${parsed.applications.length - conflicts.length} будут добавлены. Проверка завершена до записи.`;
     $("#backup-replace-conflicts").checked = false;
     $("#confirm-backup").disabled = false;
     updateConnectionControls();
@@ -854,7 +820,7 @@ async function init() {
     if ([25, 50, 100].includes(preferences.pageSize)) state.pageSize = preferences.pageSize;
     if (valid.has(preferences.sort) || preferences.sort === "priority") state.sort = preferences.sort;
     if (["asc", "desc"].includes(preferences.direction)) state.direction = preferences.direction;
-    restoreJournalConfig(); updateConnectionControls();
+    updateConnectionControls();
     $("#count-all").textContent = $("#stat-total").textContent = meta.total;
     $("#count-shortlist").textContent = (meta.status_counts.PASS || 0) + (meta.status_counts.CONDITIONAL || 0);
     $("#count-vacancies").textContent = meta.type_counts.vacancy_lead || 0;
@@ -929,15 +895,14 @@ async function init() {
       if (state.importInProgress) { event.preventDefault(); return; }
       state.pendingBackup = null; updateConnectionControls();
     });
-    $("#connect-button").addEventListener("click", () => $("#connection-dialog").showModal());
-    $("#close-connection").addEventListener("click", cancelConnection);
-    $("#cancel-connection").addEventListener("click", cancelConnection);
-    $("#connection-dialog").addEventListener("cancel", (event) => { event.preventDefault(); cancelConnection(); });
-    $("#connection-form").addEventListener("submit", connectJournal);
+    $("#journal-login-form").addEventListener("submit", loginJournal);
+    window.addEventListener("support-atlas-session-expired", expireJournalSession);
     $("#refresh-journal-button").addEventListener("click", refreshJournal);
-    $("#disconnect-button").addEventListener("click", disconnectJournal);
+    $("#disconnect-button").addEventListener("click", logoutJournal);
     window.addEventListener("beforeunload", (event) => { if (hasPendingApplicationWork()) { event.preventDefault(); event.returnValue = ""; } });
     document.addEventListener("keydown", (event) => { if (event.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName) && !$("dialog[open]")) { event.preventDefault(); $("#search").focus(); } });
+    await checkJournalSession();
+    updateConnectionControls();
     await load();
   } catch (error) {
     $("#error").hidden = false;

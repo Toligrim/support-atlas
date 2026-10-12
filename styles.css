@@ -1518,5 +1518,29 @@ dialog h2 {
 
 /* The public catalogue has no personal journal entry points. */
 html:not(.journal-mode) [data-journal] { display: none !important; }
-.connection-settings summary { cursor: pointer; color: var(--muted); padding: 12px 0; }
-.connection-settings[open] .application-fields { margin-top: 12px; }
+#journal-login { display: none; }
+html.journal-mode:not(.journal-authenticated) body > :not(#journal-login) { visibility: hidden; }
+html.journal-mode:not(.journal-authenticated) #journal-login {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--paper);
+  visibility: visible;
+}
+.journal-login-card {
+  width: min(100%, 420px);
+  display: grid;
+  gap: 16px;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 70px #24352e1c;
+}
+.journal-login-card h1,.journal-login-card p { margin: 0; }
+.journal-login-card .application-field input { width: 100%; }
+.journal-login-card .button { justify-self: start; }
+html.journal-mode.journal-authenticated #journal-login { display: none; }
