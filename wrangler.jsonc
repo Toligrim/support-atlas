@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "support-atlas-journal",
-      "database_id": "00000000000000000000000000000000",
+      "database_id": "34d78233-9647-4881-a073-0d11d5d04544",
       "migrations_dir": "migrations"
     }
   ]
