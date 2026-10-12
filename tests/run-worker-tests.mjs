@@ -5,6 +5,7 @@ import {createServer} from "node:net";
 import {mkdtemp, readFile, readdir, rm, writeFile} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join, resolve} from "node:path";
+import worker from "../src/worker.js";
 
 const root = resolve(new URL("..", import.meta.url).pathname);
 const temporary = await mkdtemp(join(tmpdir(), "support-atlas-worker-test-"));
@@ -38,6 +39,9 @@ function check(name, condition) {
   assert.ok(condition, name);
   console.log(`PASS ${name}`);
 }
+
+const unconfiguredBootstrap = await worker.fetch(new Request("https://support-atlas.example/journal/not-a-valid-token"), {});
+check("unconfigured secret link is a generic 404", unconfiguredBootstrap.status === 404);
 
 async function listFiles(directory, prefix = "") {
   const files = [];

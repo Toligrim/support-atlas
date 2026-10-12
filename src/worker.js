@@ -236,7 +236,7 @@ async function serveJournal(request, env) {
 }
 
 async function bootstrapJournal(request, env, candidate) {
-  if (!env.JOURNAL_LINK_TOKEN || !env.SESSION_SECRET) throw new HttpError(503, "Личный журнал пока не настроен.");
+  if (!env.JOURNAL_LINK_TOKEN || !env.SESSION_SECRET) return notFound();
   if (!(await verifySecretToken(candidate, env.JOURNAL_LINK_TOKEN))) return notFound();
   const gate = await expectedGateCookie(env);
   return new Response(null, {status: 303, headers: privateHeaders({Location: "/journal", "Set-Cookie": gateCookieHeader(gate)})});
