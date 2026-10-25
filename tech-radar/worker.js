@@ -4,7 +4,7 @@ const CSS = __EMBED_CSS__;
 const APP = __EMBED_APP__;
 const jsonHeaders = {"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"no-referrer"};
 function answer(value,status=200){return new Response(JSON.stringify(value),{status,headers:jsonHeaders});}
-function page(value,type){return new Response(value,{headers:{"content-type":type,"cache-control":"public, max-age=300","x-content-type-options":"nosniff","content-security-policy":type.startsWith("text/html")?"default-src 'none'; connect-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'":undefined}});}
+function page(value,type){const headers={"content-type":type,"cache-control":"public, max-age=300","x-content-type-options":"nosniff"};if(type.startsWith("text/html"))headers["content-security-policy"]="default-src 'none'; connect-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";return new Response(value,{headers});}
 function safeInt(raw,def,max){const n=Number(raw);return Number.isInteger(n)&&n>=0?Math.min(n,max):def;}
 export default {
  async fetch(request,env){
