@@ -1,0 +1,12 @@
+{
+  "name": "tech-support-radar",
+  "main": "./dist-worker.mjs",
+  "compatibility_date": "2026-10-25",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tech-support-radar-db",
+      "database_id": "8d5f98a2-1371-4b2a-986b-bc53cd15c8d3"
+    }
+  ]
+}
